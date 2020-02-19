@@ -12,7 +12,7 @@ with open("README.rst", "r") as fh:
 setuptools.setup(
     name="apk-user-cert",
     python_requires='>=3.5.3',
-    version="1.0.1",
+    version="1.0.3",
     author="ksg97031",
     author_email="ksg97031@gmail.com",
     description="Set network_security_config.xml and android:networkSecurityConfig",

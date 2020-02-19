@@ -78,22 +78,30 @@ def run(apk_path: str):
             tree = ET.parse(str(xml_path))
             root = tree.getroot()
 
-            tas_list = root.findall('.//trust-anchors')
-            if not tas_list: # xml is exist but xml didnt have trust-anchors elements somewhere 
-                raise Exception('WTF?')
+            bc_list = root.findall('base-config')
+            if not bc_list:
+                bc = ET.Element('base-config')
+                ta = ET.Element('trust-anchors')
+                bc.append(ta)
+                root.append(bc)
+            else:
+                for bc in bc_list:
+                    if not bc.find('trust-anchors'):
+                        ta = ET.Element('trust-anchors')
+                        bc.append(ta)
 
-            for tas in tas_list:
-                user_flag = False
-                for ta in tas:
-                    if ta.tag != 'certificates':
-                        continue
+                tas_list = root.findall('.//trust-anchors')
+                for tas in tas_list:
+                    user_flag = False
 
-                    if ta.attrib['src'] == 'user':
-                        user_flag = True
+                    certificates_list = tas.findall('certificates')
+                    for certificates in certificates_list:
+                        if certificates.attrib['src'] == 'user':
+                            user_flag = True
 
-                e = ET.Element('certificates', attrib={'src':'user'})
-                if not user_flag:
-                    tas.append(e)
+                    if not user_flag:
+                        e = ET.Element('certificates', attrib={'src':'user'})
+                        tas.append(e)
 
             tree.write(str(xml_path))
 
